@@ -1,0 +1,131 @@
+import java.util.ArrayList;
+
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+ 
+public class SimplePlugin extends JavaPlugin {
+        private PlayerListener PlayerListener = new PlayerListener(this);
+        public ArrayList < String > freeze = new ArrayList < String > ();
+        public boolean fly = false;
+ 
+ 
+        public void onEnable() {
+                System.out.println("Plugin Enabled");
+                PluginManager pm = getServer().getPluginManager();
+                pm.registerEvents(this.PlayerListener, this);
+                getConfig().options().copyDefaults(true);
+                saveConfig();
+        }
+        public void onDisable() {
+                System.out.println("Plugin Disabled");
+        }@Override
+        public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+                if (cmd.getName().equalsIgnoreCase("test")) {
+                        if (!(sender instanceof Player)) {
+                                sender.sendMessage(ChatColor.DARK_RED + "No test command for you!");
+                                return true;
+                        }
+                        Player player = (Player) sender;
+                        player.sendMessage("This is my very first plugin!");
+                }
+                else if (cmd.getName().equalsIgnoreCase("Heal")) {
+                        Player player = (Player) sender;
+                        if (args.length == 1) {
+                                Player user = player.getServer().getPlayer(args[0]);
+                                if (user == null) {
+                                        player.sendMessage("Invalid Player");
+                                        return true;
+                                }
+                                user.setHealth(20);
+                        }
+                        else {
+                                player.sendMessage(ChatColor.DARK_RED + "/Heal <player>");
+                        }
+                }
+                else if (cmd.getName().equalsIgnoreCase("fly")) {
+                        Player player = (Player) sender;
+                        if (!fly) {
+                                fly = true;
+                                player.setAllowFlight(true);
+                                player.setFlying(true);
+                                return true;
+                        }
+                        else {
+                                fly = false;
+                                player.setAllowFlight(false);
+                                player.setFlying(false);
+                                return true;
+                        }
+                }
+                else if (cmd.getName().equalsIgnoreCase("weapon")) {
+                        Player player = (Player) sender;
+                        ItemStack weapon = new ItemStack(Material.DIAMOND_SWORD, 1);
+                        player.setItemInHand(weapon);
+                }
+                else if (cmd.getName().equalsIgnoreCase("ci")) {
+                        Player player = (Player) sender;
+                        if (args.length == 1) {
+                                Player user = player.getServer().getPlayer(args[0]);
+                                if (user == null) {
+                                        return false;
+                                }
+                                else {
+                                        user.getInventory().clear();
+                                }
+                        }
+                        else {
+                                player.getInventory().clear();
+                        }
+                }
+                else if (cmd.getName().equalsIgnoreCase("freeze")) {
+                        Player player = (Player) sender;
+                        if (args.length == 1) {
+                                Player user = player.getServer().getPlayer(args[0]);
+                                if (user == null) {
+                                        return false;
+                                }
+                                else {
+                                        if (freeze.contains(user.getName())) {
+                                                freeze.remove(user.getName());
+                                        }
+                                        else {
+                                                freeze.add(user.getName());
+                                        }
+ 
+                                }
+                        }
+                        else {
+                                return false;
+                        }
+ 
+                }
+                else if (cmd.getName().equalsIgnoreCase("Feed")) {
+                        Player player = (Player) sender;
+                        if (args.length == 1) {
+                                Player user = player.getServer().getPlayer(args[0]);
+                                if (user == null) {
+                                        player.sendMessage("Invalid Player");
+                                        return true;
+                                }
+                                user.setFoodLevel(20);
+                        }
+                        else {
+                                player.sendMessage(ChatColor.DARK_RED + "/Feed <player>");
+                        }
+                }
+                else if (cmd.getName().equalsIgnoreCase("Config")) {
+                        reloadConfig();
+                        saveConfig();
+                        String message = getConfig().getString("#Created by Eamon12");
+  					sender.sendMessage(ChatColor.GOLD + message);
+                }
+                return true;
+        }
+ 
+}
