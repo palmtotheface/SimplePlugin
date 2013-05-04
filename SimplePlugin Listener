@@ -1,0 +1,41 @@
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+ 
+public class PlayerListener implements Listener {
+ 
+        public SimplePlugin plugin;
+ 
+        public PlayerListener(SimplePlugin instance) {
+                plugin = instance;
+        }
+ 
+        @EventHandler(priority = EventPriority.HIGHEST)
+        public void onBlockPlace(BlockPlaceEvent e) {
+                if (plugin.getConfig().getBoolean("Block TNT") == true) {
+                        if (e.getBlockPlaced().getType().equals(Material.TNT)) {
+                                if (!e.getPlayer().hasPermission("test.PlaceTnt")) {
+                                        e.setCancelled(true);
+                                }
+                        }
+                }
+ 
+        }@EventHandler(priority = EventPriority.HIGHEST)
+        public void onPlayerJoin(PlayerJoinEvent e) {
+                e.getPlayer().sendMessage(ChatColor.DARK_BLUE + "Welcome to my server!");
+        }
+ 
+        @EventHandler(priority = EventPriority.HIGHEST)
+        public void onPlayerMove(PlayerMoveEvent e) {
+                if (plugin.freeze.contains(e.getPlayer().getName())) {
+                        e.getPlayer().teleport(e.getPlayer().getLocation());
+                        e.getPlayer().sendMessage(ChatColor.RED + "You have been frozen!");
+                }
+        }
+ 
+}
